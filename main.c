@@ -1,55 +1,94 @@
 
 #include<stdio.h>
-int count=0;
-int w[10];
-int d;
-int x[10];
+#include<conio.h>
+ #include<stdlib.h>
+int cost[10][10],n;
 
-void subset(int cs,int k,int r)
+int find(int node, int parent[10])
 {
-    int i;
-    x[k]=1;
+while(parent[node]!=node)
+ node=parent[node];
+return node;
+}
 
-    if(cs+w[k]==d)
-    {
-        printf("\nSubset solution=%d\n",++count);
-        for(i=0;i<=k;i++)
-        {
-            if(x[i]==1)
-                printf("%d    ",w[i]);
-        }
-    }
-    else if(cs+w[k]+w[k+1]<=d)
-        subset(cs+w[k],k+1,r-w[k]);
-    if((cs+r-w[k]>=d)&&(cs+w[k+1]<=d))
-    {
-        x[k]=0;
-        subset(cs,k+1,r-w[k]);
-    }
+int union_ij(int i,int j,int parent[10])
+{
+if(i<j)
+parent[j]=i;
+
+else
+parent[i]=j;
+}
+
+
+
+void kruskal_mst()
+{
+int count, i, parent[10], min, u, v, k, t[10][2], sum,j;
+count=0,sum=0,k=0;
+for(i=0;i<n;i++)
+parent[i]=i;
+
+while(count<n)
+{
+min=999;
+for(i=0;i<n;i++)
+{
+for(j=0;j<n;j++)
+{
+if(cost[i][j]<min)
+{
+min=cost[i][j];
+u=i;
+v=j;
+}
+}
+}
+if(min==999)break;
+i=find(u,parent);
+j=find(v,parent);
+if(i!=j)
+{
+t[k][0]=u;
+t[k][1]=v;
+k++;
+ count++;
+
+sum=sum+min;
+ union_ij(i,j,parent);
+}
+cost[u][v]=cost[v][u]=999;
+}
+
+if(count==n-1)
+{
+printf("\nSpanning Tree Exists");
+printf("\nThe cost of MST = %d",sum);
+printf("\nSpanning tree is shown below:");
+for(k=0;k<n-1;k++)
+printf("\n%d-->%d",t[k][0],t[k][1]);
+return;
+}
+
+else
+printf("\nSpanning tree do not exist");
 }
 
 int main()
 {
-
-    int sum=0,i,n;
-    printf("\nEnter the number of elements\n");
-    scanf("%d",&n);
-
-    printf("\nEnter the elements in ascending order:\n");
-    for(i=0;i<n;i++)
-        scanf("%d",&w[i]);
-
-    printf("\nEnter the required sum:");
-    scanf("%d",&d);
-
-    for(i=0;i<n;i++)
-            sum+=w[i];
-
-    if(sum<d)
-    {
-        printf("\nNo solution exists\n");
-        return;
-    }
-    printf("\nThe solution is:\n");
-    subset(0,0,sum);
+int i, j;
+printf("\n\n\tImplementation of Kruskal's algorithm\n\n");
+ printf("\nEnter the no. of vertices\n");
+scanf("%d",&n);
+printf("\nEnter the cost adjacency matrix\n");
+for(i=0;i<n;i++)
+{
+for(j=0;j<n;j++)
+{
+scanf("%d",&cost[i][j]);
+if(cost[i][j]==0)
+cost[i][j]=999;
+}
+}
+kruskal_mst();
 }
